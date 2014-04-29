@@ -1,0 +1,101 @@
+package com.self.brightnesstool;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.Window;
+import android.view.WindowManager;
+import android.provider.Settings.System;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+
+public class MainActivity extends Activity implements OnSeekBarChangeListener {
+
+	private static final String TAG = MainActivity.class.getName();
+
+	private SeekBar seekbar;
+	private final int BRIGTHNESS_MAX_VALUE = 255;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		setContentView(R.layout.activity_main);
+		seekbar = (SeekBar) findViewById(R.id.seekbar);
+		seekbar.setMax(BRIGTHNESS_MAX_VALUE);
+		seekbar.setProgress((int) (System.getInt(getContentResolver(),
+				System.SCREEN_BRIGHTNESS, BRIGTHNESS_MAX_VALUE)));
+		seekbar.setOnSeekBarChangeListener(this);
+
+	}
+
+	/**
+	 * Value to the required brightness FIXME : can be runned in the ui thread
+	 * 
+	 * @param value
+	 */
+	public void setBrightNess(int value) {
+		System.putInt(getContentResolver(), System.SCREEN_BRIGHTNESS, value);
+		WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+		layoutParams.screenBrightness = (float) value / BRIGTHNESS_MAX_VALUE;
+		getWindow().setAttributes(layoutParams);
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+	@Override
+	public void onProgressChanged(SeekBar arg0, int value, boolean fromUser) {
+		if (fromUser) {
+			Log.d(TAG, "Current seekbar value is" + value);
+			setBrightNess(value);
+		}
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar arg0) {
+
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar arg0) {
+	}
+
+}
+
+
+//    <uses-permission android:name="android.permission.WRITE_SETTINGS" >
+//  </uses-permission>
+//
+//<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+//xmlns:tools="http://schemas.android.com/tools"
+//android:layout_width="match_parent"
+//android:layout_height="match_parent"
+//android:paddingBottom="@dimen/activity_vertical_margin"
+//android:paddingLeft="@dimen/activity_horizontal_margin"
+//android:paddingRight="@dimen/activity_horizontal_margin"
+//android:paddingTop="@dimen/activity_vertical_margin"
+//tools:context=".MainActivity" >
+//
+//<SeekBar
+//    android:id="@+id/seekbar"
+//    android:layout_width="match_parent"
+//    android:layout_height="wrap_content"
+//    android:layout_centerVertical="true" />
+//
+//
+//<TextView
+//    android:id="@+id/BrightNessLabel"
+//    android:layout_width="match_parent"
+//    android:layout_height="wrap_content"
+//    android:layout_above="@id/seekbar"
+//    android:text="Brightness" />
+//
+//</RelativeLayout>
